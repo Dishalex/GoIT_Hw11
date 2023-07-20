@@ -1,4 +1,4 @@
-from ab_classes import AddressBook, Name, Phone, Record
+from ab_classes import AddressBook, Name, Phone, Record, Birthday
 address_book = AddressBook()
 
 def input_error(func):
@@ -25,7 +25,9 @@ def add_command(args: tuple[str]) -> str:
     rec: Record = address_book.get(str(name))
     if rec:
         return rec.add_phone(phone)
-    rec = Record(name, phone)
+    if args[2]:
+        b_day = Birthday(args[2])
+    rec = Record(name, phone, b_day)
     return address_book.add_record(rec)
 
 @input_error

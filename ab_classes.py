@@ -1,5 +1,8 @@
 from collections import UserDict
+from datetime import datetime
 
+# class BirthdayError(Exception):
+#     pass
 
 class Field:
     def __init__(self, value) -> None:
@@ -17,10 +20,32 @@ class Phone(Field):
 class Name(Field):
     pass
 
+class Birthday:
+    def __init__(self, value):
+        self.__value = None
+        self.value = value
+        
+    @property
+    def value(self):
+        return self.__value # datetime#.strftime("%d-%m-%Y")    
+        
+    @value.setter
+    def value(self, value):
+        try:
+            self.__value = datetime.strptime(value, "%d-%m-%Y")
+        except Exception as err:
+            return err
+
+
+    def __str__(self):
+        return self.__value.strftime("%d-%m-%Y")
+
+
 class Record():
-    def __init__(self, name: Name, phone: Phone = None) -> None:
+    def __init__(self, name: Name, phone: Phone = None, birthday: Birthday = None) -> None:
         self.name = name
         self.phones = []
+        self.birthday = birthday
         if phone:
             self.phones.append(phone)
     
@@ -39,11 +64,11 @@ class Record():
     
     def del_phone(self, phone_to_remove: Phone):
         for indx, p in enumerate(self.phones):
-            print(phone_to_remove.value == p.value)
             if phone_to_remove.value == p.value:
                 del self.phones[indx]
                 return f'Contacts "{self.name}" phone "{phone_to_remove}" was removed".'    
         return f'Contact "{self.name}" has no phone "{phone_to_remove}" to remove.'    
+  
 
     def __str__(self) -> str:
         return f"{self.name}: {', '.join(str(p) for p in self.phones)}"           
@@ -58,3 +83,17 @@ class AddressBook(UserDict):
         if self.data:
             return '\n'.join(str(r) for r in self.values()) + '\n' + '...the end of phone book.'
         return 'Address book is empty'
+
+    def get_day_to_bd(self):
+        if self.birthday:
+            return self.birthday.value.weekday()
+        return -1
+
+    def __iter__(self):
+        pass
+        #return self
+    
+    def __next__(self, N: int = 10):
+        pass
+        
+

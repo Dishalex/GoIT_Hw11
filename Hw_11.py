@@ -34,7 +34,7 @@ def add_command(args: tuple[str]) -> str:
     if rec:
         return rec.add_phone(phone)
     try:
-        bdate = args[2]
+        args[2]
         try:
             b_day = Birthday(args[2])
             rec = Record(name, phone, b_day)
@@ -73,7 +73,7 @@ def show_command(args: tuple[str]) -> str:
     if rec:
         return rec
     else:
-        f'No contact with name "{name}" in address book'
+        return f'No contact with name "{name}" in address book'
 
 @input_error
 def show_all_command(*args) -> str:

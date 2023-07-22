@@ -1,11 +1,17 @@
-from ab_classes import AddressBook, Name, Phone, Record, Birthday
+from ab_classes import AddressBook, Name, Phone, Record, Birthday, BirthdayError, PhoneError, Name_Error
 address_book = AddressBook()
 
 def input_error(func):
     def wrapper(*args):
         try:
             return func(args)
-        except Exception as err:
+        except PhoneError:
+            return "Phone number must be in the format +380XXXXXXXXX"
+        except Name_Error:
+            return "Name must be not less then 3 symbols"
+        except BirthdayError:
+            return "Birthday must be in format dd-mm-yyyy"
+        except IndexError:   
             if func.__name__ == 'add_command':
                 return 'Please specify contact name and phone after command'
             elif func.__name__ == 'change_command':
@@ -15,6 +21,8 @@ def input_error(func):
             elif func.__name__ == 'show_command':
                 return 'Please specify contact name after command'
             return 'Please try again'
+        except Exception as err:
+            return err
     return wrapper
 
 
@@ -25,9 +33,18 @@ def add_command(args: tuple[str]) -> str:
     rec: Record = address_book.get(str(name))
     if rec:
         return rec.add_phone(phone)
-    if args[2]:
-        b_day = Birthday(args[2])
-    rec = Record(name, phone, b_day)
+    try:
+        bdate = args[2]
+        try:
+            b_day = Birthday(args[2])
+            rec = Record(name, phone, b_day)
+            return address_book.add_record(rec)
+        except Exception as err:
+            return err
+    except Exception:
+        pass
+    rec = Record(name, phone)
+        
     return address_book.add_record(rec)
 
 @input_error
@@ -58,7 +75,18 @@ def show_command(args: tuple[str]) -> str:
     else:
         f'No contact with name "{name}" in address book'
 
+@input_error
 def show_all_command(*args) -> str:
+    try:
+        n = 0
+        k = int(args[0])
+        for rec in address_book.iterator(k):
+            print(f'Рage {n}')
+            print(rec)
+            n += 1
+        return 'End of records'
+    except Exception:
+        pass  
     return address_book
 
 def no_command():
